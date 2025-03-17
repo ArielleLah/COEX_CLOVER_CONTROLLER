@@ -109,6 +109,8 @@ class controller:
           - Q: rotate left (yaw positive)
           - E: rotate right (yaw negative)
           - T: take off or land
+          - Space: higher altitude
+          - C: Lower altitude
         """
         print("""Starting display controller. 
           - W: move forward (increase x)
@@ -118,6 +120,8 @@ class controller:
           - Q: rotate left (yaw positive)
           - E: rotate right (yaw negative)
           - T: Take off or land
+          - Space:Higher altitude (increase z)
+          - C: Lower altitude (decrease z)
           - Press ESC to exit the display loop.""")
         while not rospy.is_shutdown():
             # If an image is available, convert it to OpenCV format.
@@ -168,6 +172,12 @@ class controller:
             elif key == ord('t'):
                 # take off or land 
                 self.takeoff_or_land()
+             elif key == ord(' '):
+                # Move up (positive z)
+                self.navigate(x=0, y=0, z=0.5, frame_id='body')
+            elif key == ord('c'):
+                # Move down (negative z)
+                self.navigate(x=0, y=-0, z=0.5, frame_id='body')
             elif key == 27:  # ESC key to break out of the loop
                 print("Exiting display controller.")
                 cv2.destroyAllWindows()
