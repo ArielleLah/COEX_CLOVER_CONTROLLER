@@ -64,10 +64,10 @@ class controller:
             print('Landing')
             self.land()
 
-    def get_next_goal(self, x,y,z):
+    def go_to_goal(self, x,y,z, yaw_degrees):
         print('Navigating to given goal')
         ###TODO make it move to the pose given
-        self.navigate(x=x, y=y, z=z, speed=0.5, frame_id='body')
+        self.navigate(x=x, y=y, z=z, yaw=math.radians(yaw_degrees), speed=0.5, frame_id='body')
     
     def rotate(self, degrees):
         self.navigate(yaw=math.radians(degrees), frame_id='body')
