@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>COEX_CLOVER_CONTROLLER</name>
+  <name>coex_clover_controller</name>
   <version>0.0.0</version>
-  <description>The COEX_CLOVER_CONTROLLER package</description>
+  <description>The coex_clover_controller package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
   <!-- Example:  -->
@@ -26,7 +26,9 @@
   <!-- Authors do not have to be maintainers, but could be -->
   <!-- Example: -->
   <!-- <author email="jane.doe@example.com">Jane Doe</author> -->
-
+  <build_depend>rospy</build_depend>
+  <build_depend>sensor_msgs</build_depend>
+  <build_depend>cv_bridge</build_depend>
 
   <!-- The *depend tags are used to specify dependencies -->
   <!-- Dependencies can be catkin packages or system dependencies -->
@@ -49,6 +51,10 @@
   <!-- Use doc_depend for packages you need only for building documentation: -->
   <!--   <doc_depend>doxygen</doc_depend> -->
   <buildtool_depend>catkin</buildtool_depend>
+  <exec_depend>rospy</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>cv_bridge</exec_depend>
+
 
 
   <!-- The export tag contains other, unspecified, tags -->

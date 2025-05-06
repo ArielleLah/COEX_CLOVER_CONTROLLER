@@ -8,7 +8,7 @@ import cv2
 import numpy as np
 import math
 
-class controller:
+class drone_controller:
     def __init__(self):
         rospy.init_node('flight') # 'flight' is name of your ROS node
 
@@ -25,7 +25,7 @@ class controller:
         self.land = rospy.ServiceProxy('land', Trigger)
 
         self.startTelemetry = self.get_telemetry(frame_id='terrain')
-        print(self.startTelemetry.x, self.startTelemetry.y, self.startTelemetry.z) 
+        print("Starting Telemetry: x= ",self.startTelemetry.x,"y= ", self.startTelemetry.y,"z= ", self.startTelemetry.z) 
 
         self.landed = True
 
@@ -33,18 +33,22 @@ class controller:
         self.bridge = CvBridge()
 
         self.recent_img = None #to store most recent camera image
+        self.recent_msg = None
         #add a camera subscriber and keep track of the most recent image as a class variable
-        self.camera_sub = rospy.Subscriber('main_camera/image_raw', Image, self.camera_callback)
+        self.camera_sub = rospy.Subscriber('/main_camera/image_raw', Image, self.camera_callback)
 
         self.range = None #to store the latest range reading
         #Subscribe to the range finder store as a class variable
-        self.range_sub = rospy.Subscriber("rangefinder", Range, self.range_callback)
+        self.range_sub = rospy.Subscriber('/rangefinder/range', Range, self.range_callback)
         
 
     def camera_callback(self, msg):
         #callback function for the camera subscriber and updates the most recent image received
-        self.recent_img = msg
-
+        self.recent_msg = msg
+        try:
+            self.recent_img = cv_image = self.bridge.imgmsg_to_cv2(self.recent_msg, "bgr8")
+        except:
+            pass
     def range_callback(self, msg):
         
         self.range = msg.range
@@ -55,9 +59,9 @@ class controller:
     #Function for Take off or Landings
     def takeoff_or_land(self):
         if self.landed == True:
-            self.navigate(x=0, y=0, z=2, frame_id='body', auto_arm=True) #takes off to 2m off the ground
-            print('Taking off: setting altitude to 3m')
-            self.set_altitude(z=3, frame_id='terrain') #sets altitude to 3m off ground
+            self.navigate(x=0, y=0, z=2, frame_id='body', auto_arm=True) #takes off to 1.9m off the ground
+            self.set_altitude(z=2, frame_id='terrain') #sets altitude to 2m off ground
+            print('Taking off: setting altitude to 2m')
             self.landed = False
         else:
             self.landed = True
@@ -67,7 +71,7 @@ class controller:
     def go_to_goal(self, x,y,z, yaw_degrees):
         print('Navigating to given goal')
         ###TODO make it move to the pose given
-        self.navigate(x=x, y=y, z=z, yaw=math.radians(yaw_degrees), speed=0.5, frame_id='body')
+        self.navigate(x=x, y=y, z=z, yaw=math.radians(yaw_degrees), speed=0.5, frame_id='body', auto_arm= True) 
     
     def rotate(self, degrees):
         self.navigate(yaw=math.radians(degrees), frame_id='body')
@@ -126,11 +130,7 @@ class controller:
         while not rospy.is_shutdown():
             # If an image is available, convert it to OpenCV format.
             if self.recent_img is not None:
-                try:
-                    cv_image = self.bridge.imgmsg_to_cv2(self.recent_img, "bgr8")
-                except CvBridgeError as e:
-                    rospy.logerr(e)
-                    continue
+                cv_image = self.recent_img.copy()
             else:
                 # Create a blank image if no image is available.
                 cv_image = np.zeros((480, 640, 3), np.uint8)
@@ -153,16 +153,16 @@ class controller:
             # Adjust the movement distance or rotation angle as needed.
             if key == ord('w'):
                 # Move forward (positive x)
-                self.navigate(x=0.5, y=0, z=0, frame_id='body')
+                self.navigate(x=0.5, y=0, z=0, frame_id='body', auto_arm= True)
             elif key == ord('s'):
                 # Move backward (negative x)
-                self.navigate(x=-0.5, y=0, z=0, frame_id='body')
+                self.navigate(x=-0.5, y=0, z=0, frame_id='body', auto_arm= True)
             elif key == ord('a'):
                 # Move left (negative y)
-                self.navigate(x=0, y=0.5, z=0, frame_id='body')
+                self.navigate(x=0, y=0.5, z=0, frame_id='body', auto_arm= True)
             elif key == ord('d'):
                 # Move right (positive y)
-                self.navigate(x=0, y=-0.5, z=0, frame_id='body')
+                self.navigate(x=0, y=-0.5, z=0, frame_id='body', auto_arm= True)
             elif key == ord('q'):
                 # Rotate counterclockwise by 10 degrees
                 self.rotate(10)
@@ -172,12 +172,12 @@ class controller:
             elif key == ord('t'):
                 # take off or land 
                 self.takeoff_or_land()
-             elif key == ord(' '):
+            elif key == ord(' '):
                 # Move up (positive z)
-                self.navigate(x=0, y=0, z=0.5, frame_id='body')
+                self.navigate(x=0, y=0, z=0.5, frame_id='body', auto_arm= True)
             elif key == ord('c'):
                 # Move down (negative z)
-                self.navigate(x=0, y=-0, z=0.5, frame_id='body')
+                self.navigate(x=0, y=-0, z=-0.5, frame_id='body', auto_arm= True)
             elif key == 27:  # ESC key to break out of the loop
                 print("Exiting display controller.")
                 cv2.destroyAllWindows()
@@ -187,5 +187,5 @@ class controller:
 
 
 if __name__ == "__main__":
-    c = controller()
+    c = drone_controller()
     c.display_controller() #immediately launch display only exits with esc key
