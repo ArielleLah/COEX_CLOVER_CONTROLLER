@@ -1,12 +1,12 @@
-#!/usr/bin/ python3
+#!/usr/bin/ python
 import rospy, time
 import json
 import requests
 from typing import List, Dict
+from controller import drone_controller # Import your drone controller from the coex_clover_controller package
 from smolagents import tool, CodeAgent, OpenAIServerModel# Import CodeAgent and HfApiModel from the agents module
 OpenAIServerModel.flatten_messages_as_text = True
 OpenAIServerModel.kwargs = {}
-from coex_clover_controller.scripts.controller import drone_controller # Import your drone controller from the coex_clover_controller package
 import numpy as np
 from clover import srv
 from key import API_KEY

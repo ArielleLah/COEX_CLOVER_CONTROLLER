@@ -1,7 +1,0 @@
-<launch>
-  <!-- Include the simulator launch file from clover_simulation -->
-  <include file="$(find clover_simulation)/launch/simulator.launch" />
-
-  <!-- Launch the controller node from the COEX_CLOVER_CONTROLLER package -->
-  <node pkg="coex_clover_controller" type="smoldroneagent.py" name="controller" output="screen" />
-</launch>
