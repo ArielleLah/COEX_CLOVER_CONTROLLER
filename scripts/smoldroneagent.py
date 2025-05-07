@@ -1,12 +1,23 @@
 #!/usr/bin/ python
+import os, sys
+
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+
+# Insert the src/ directory (where smolagents actually lives)
+SRCROOT = os.path.join(HERE, "local_smolagents", "src")
+if SRCROOT not in sys.path:
+    sys.path.insert(0, SRCROOT)
+
+from smolagents import tool, CodeAgent, OpenAIServerModel# Import CodeAgent and HfApiModel from the agents module
+OpenAIServerModel.flatten_messages_as_text = True
+OpenAIServerModel.kwargs = {}
+
 import rospy, time
 import json
 import requests
 from typing import List, Dict
 from controller import drone_controller # Import your drone controller from the coex_clover_controller package
-from smolagents import tool, CodeAgent, OpenAIServerModel# Import CodeAgent and HfApiModel from the agents module
-OpenAIServerModel.flatten_messages_as_text = True
-OpenAIServerModel.kwargs = {}
 import numpy as np
 from clover import srv
 from key import API_KEY
