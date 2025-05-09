@@ -257,17 +257,11 @@ if __name__ == '__main__':
                     • is_grounded(): returns True if on the ground, False if airborne.  
                     • flight_command(x, y, z, degrees): moves by x/y/z meters (relative to body frame) and rotates by degrees.  
                     • get_telemetry(): returns class with attributes like the x, y, z coordinates
-                    • detect_object(target_str) → bool: returns True if the camera image matches the target object, target_str = {user_input}
+                    • detect_object({user_input}) → bool: returns True if the camera image matches the target object
 
                     Mission: search a 10 m × 10 m box, in 1 m increments, using detect_object check if object is within the image. Never change altitude after takeoff.
                     
-                    1. **Take off & establish altitude**  
-                    - Call `takeoff_or_land()` 
-                    2. **Define bounds**  
-                    - x_min = 0, x_max = 10  
-                    - y_min = 0, y_max = 10  
-                    - Absolute constraint: never allow x or y outside 0…12.  
-                    3. Grid sweep algorithm  
+                    1. Grid sweep algorithm  
                         1. After takeoff, call get_telemetry() once to get (x0, y0, z0); keep z = z0 forever.  
                         2. Define your search box:  
                             • x_min = 0, x_max = 12  
@@ -279,7 +273,7 @@ if __name__ == '__main__':
                                 – Repeat 12 times:  
                                     • Call flight_command(dx, 0, 0, 0)  
                                     • Call get_telemetry() to read (x,y)  
-                                    • Call detect_object(target_str = {user_input}); if returns True, pull coordinates with get_telemetry and report "{user_input} found at (x,y)" & stop
+                                    • Call detect_object({user_input}); if returns True, pull coordinates with get_telemetry and report "{user_input} found at (x,y)" & stop
                                 b. **If this was the last row (row_index == 12), break out.**  
                                 c. **Move one row over in Y**  
                                 • Call flight_command(0, +1, 0, 0)  
@@ -287,9 +281,9 @@ if __name__ == '__main__':
                                 d. **Reverse direction**  
                                 – Set dx = –dx  
                         5. If you finish all 13 rows without finding the target, report “Target not found.”
-                    4. **Boundary enforcement**  
-                    - Before _any_ `flight_command`, check `get_telemetry()`; if the next x or y would fall outside 0…12, reverse direction or skip that move.  
-                    5. Remember where you have searched
+                    2. **Boundary enforcement**  
+                       - Before _any_ `flight_command`, check `get_telemetry()`; if the next x or y would fall outside 0…12, reverse direction or skip that move.
+                    3. Remember where you searched.
                 """
                 response = a.run(agent_prompt)
                 print("Agent response:", response)
